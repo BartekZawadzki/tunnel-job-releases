@@ -1,4 +1,4 @@
-# Signs the macOS download of every published release with the Developer ID of Providentia Worldwide (Team GKS78Q935U),
+# Signs the macOS download of every published release with the team's Apple Developer ID,
 # notarizes and staples it, and replaces Breachworks-macOS.dmg of the release with it. Only the dmg line of SHA256SUMS.txt
 # changes; the Windows lines stay byte for byte (the game's Windows updater checks Setup.exe against them).
 # The builds are published from the build computer as before; this runs on GitHub's macOS runner, nothing depends on a PC.
