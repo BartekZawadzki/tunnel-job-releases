@@ -1,0 +1,45 @@
+BREACHWORKS @VERSION@ NA macOS
+==========================
+
+Jedna aplikacja dla Macow z procesorem Intel i Apple Silicon, macOS 12
+(Monterey) lub nowszy. To ta sama gra co Breachworks @VERSION@ na Windows:
+gracze na Macu i na Windows z wersja @VERSION@ moga grac razem przez LAN i online.
+Wszyscy w jednej grze potrzebuja wersji @VERSION@.
+
+VR (beta) jest tylko na Windows: wersja na Maca dziala bez VR.
+
+Aplikacja jest podpisana certyfikatem Apple Developer ID i notaryzowana przez
+Apple, wiec otwiera sie jak kazda inna aplikacja pobrana z internetu.
+Bez Terminala, bez "Otworz mimo to" i bez dodatkowych krokow.
+
+INSTALACJA
+----------
+1. Kliknij dwukrotnie Breachworks-macOS.dmg. Otworzy sie okno dysku "Breachworks".
+2. Przeciagnij Breachworks.app na skrot Applications (Aplikacje) w tym samym oknie.
+3. Wysun dysk Breachworks (przycisk wysuwania obok niego w Finderze).
+4. Uruchom Breachworks z Launchpada albo z folderu Aplikacje.
+   Za pierwszym razem macOS napisze, ze Breachworks pobrano z internetu
+   i ze Apple sprawdzilo go pod katem zlosliwego oprogramowania:
+   nacisnij "Otworz".
+5. Gdy gra zapyta o dostep do sieci lokalnej - zezwol (potrzebne, zeby
+   znalezc i zalozyc gre LAN). Jesli zapora macOS jest wlaczona, pozwol
+   Breachworks przyjmowac polaczenia przychodzace.
+
+Masz juz starsza wersje w Aplikacjach? Przeciagnij nowa na jej miejsce
+i wybierz "Zastap". Ustawienia i zapisy gry zostaja.
+
+AKTUALIZACJE
+------------
+Gdy wyjdzie nowa wersja, gra o tym powie, a przycisk "Otworz strone wydania"
+otworzy strone pobierania w przegladarce. Pobierz tam nowy
+Breachworks-macOS.dmg i znowu przeciagnij aplikacje do Aplikacji ("Zastap").
+
+GDZIE SA LOGI
+-------------
+~/Library/Logs/Breachworks/Breachworks/Player.log
+(Finder -> menu Idz -> Idz do folderu... -> wklej powyzsza sciezke)
+Ustawienia i zapisy gry: ~/Library/Application Support/Breachworks/Breachworks/
+
+Jesli cos nie dziala, odeslij prosze Player.log, zrzut ekranu
+(Cmd+Shift+3 caly ekran, Cmd+Shift+4 fragment; zapisuja sie na biurku)
+i krotki opis: model Maca, wersja macOS, co sie stalo.

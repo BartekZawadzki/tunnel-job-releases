@@ -1,0 +1,88 @@
+# Signs the macOS download of every published release with the Developer ID of Providentia Worldwide (Team GKS78Q935U),
+# notarizes and staples it, and replaces Breachworks-macOS.dmg of the release with it. Only the dmg line of SHA256SUMS.txt
+# changes; the Windows lines stay byte for byte (the game's Windows updater checks Setup.exe against them).
+# The builds are published from the build computer as before; this runs on GitHub's macOS runner, nothing depends on a PC.
+# Re-run for any release: Actions -> Sign macOS dmg -> Run workflow -> tag. A dmg that is already signed and stapled is left alone.
+# The secrets are set once by the owner with tools\mac\setup-release-signing.ps1 of the game repo.
+name: Sign macOS dmg
+
+on:
+  release:
+    types: [published]
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: "Release tag to sign (vX.Y.Z)"
+        required: true
+        type: string
+
+permissions:
+  contents: write
+
+concurrency:
+  group: sign-mac-${{ github.event.release.tag_name || inputs.tag }}
+  cancel-in-progress: false
+
+jobs:
+  sign:
+    runs-on: macos-latest
+    timeout-minutes: 120
+    env:
+      TAG: ${{ github.event.release.tag_name || inputs.tag }}
+      REPO: ${{ github.repository }}
+      GH_TOKEN: ${{ github.token }}
+      TEAM_ID: GKS78Q935U
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Download the release's dmg and check its hash
+        id: fetch
+        run: bash mac/sign-release.sh fetch
+
+      - name: Copy Breachworks.app out of the dmg
+        if: steps.fetch.outputs.skip != 'true'
+        run: bash mac/sign-release.sh extract
+
+      - name: Temporary keychain with the Developer ID certificate
+        if: steps.fetch.outputs.skip != 'true'
+        env:
+          MAC_CERT_P12_BASE64: ${{ secrets.MAC_CERT_P12_BASE64 }}
+          MAC_CERT_P12_PASSWORD: ${{ secrets.MAC_CERT_P12_PASSWORD }}
+          ASC_KEY_P8_BASE64: ${{ secrets.ASC_KEY_P8_BASE64 }}
+          ASC_KEY_ID: ${{ secrets.ASC_KEY_ID }}
+          ASC_ISSUER_ID: ${{ secrets.ASC_ISSUER_ID }}
+        run: bash mac/sign-release.sh keychain
+
+      - name: Sign the app inside out (hardened runtime, timestamp, entitlements)
+        if: steps.fetch.outputs.skip != 'true'
+        run: bash mac/sign-release.sh sign
+
+      - name: Notarize and staple the app
+        if: steps.fetch.outputs.skip != 'true'
+        env:
+          ASC_KEY_ID: ${{ secrets.ASC_KEY_ID }}
+          ASC_ISSUER_ID: ${{ secrets.ASC_ISSUER_ID }}
+        run: bash mac/sign-release.sh notarize-app
+
+      - name: Build and sign the dmg (no installer .command)
+        if: steps.fetch.outputs.skip != 'true'
+        run: bash mac/sign-release.sh dmg
+
+      - name: Notarize, staple and check the dmg
+        if: steps.fetch.outputs.skip != 'true'
+        env:
+          ASC_KEY_ID: ${{ secrets.ASC_KEY_ID }}
+          ASC_ISSUER_ID: ${{ secrets.ASC_ISSUER_ID }}
+        run: bash mac/sign-release.sh notarize-dmg
+
+      - name: Smoke test (the app from the dmg, headless, 20 s)
+        if: steps.fetch.outputs.skip != 'true'
+        run: bash mac/sign-release.sh smoke
+
+      - name: Replace the dmg and its SHA256SUMS.txt line on the release
+        if: steps.fetch.outputs.skip != 'true'
+        run: bash mac/sign-release.sh publish
+
+      - name: Remove the keychain and the key files
+        if: always()
+        run: bash mac/sign-release.sh cleanup

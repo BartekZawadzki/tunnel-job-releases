@@ -9,3 +9,7 @@ Installers of **Tunnel Job**, a 5 v 5 heist game on a destructible block grid fo
   checks it against the checksum list and installs it.
 
 This repository holds releases only. It has no source code.
+
+The macOS disk image of each release is signed with a Developer ID, notarized by Apple and stapled by the
+`Sign macOS dmg` workflow (`.github/workflows/sign-mac.yml`, script `mac/sign-release.sh`) shortly after the release is
+published; it replaces `Breachworks-macOS.dmg` and only that file's line in `SHA256SUMS.txt`.
